@@ -5,11 +5,8 @@
 
 (in-package :cl-tuples-wrapper)
 
-(defmacro def-tuple-values (type-name)
-  (tuple-expansion-fn type-name :def-tuple-values))
-
-(defmacro def-new-tuple (type-name)
-  (tuple-expansion-fn type-name :def-new-tuple))
+(defmacro def-tuple-array-maker (type-name)
+  (tuple-expansion-fn type-name :def-tuple-array-maker))
 
 (defmacro def-tuple-accessor (type-name)
   (tuple-expansion-fn type-name :def-tuple-accessor))
@@ -17,36 +14,42 @@
 (defmacro def-tuple-accessor* (type-name)
   (tuple-expansion-fn type-name :def-tuple-accessor*))
 
-(defmacro def-tuple-setter (type-name)
-  (tuple-expansion-fn type-name :def-tuple-setter))
-
-(defmacro def-tuple-maker (type-name)
-  (tuple-expansion-fn type-name :def-tuple-maker))
-
-(defmacro def-tuple-maker* (type-name)
-  (tuple-expansion-fn type-name :def-tuple-maker*))
-
-(defmacro def-tuple-getter (type-name)
-  (tuple-expansion-fn type-name :def-tuple-getter))
-
-(defmacro def-tuple-setf* (type-name)
-  (tuple-expansion-fn type-name :def-tuple-setf*))
-
 (defmacro make-tuple-operations (type-name)
   `(progn
-     (def-tuple-values ,type-name)
-     (def-new-tuple ,type-name)
+     (cl-tuples::def-tuple ,type-name)
+     (cl-tuples::def-tuple-getter ,type-name)
+     (cl-tuples::def-tuple-aref* ,type-name)
+	 (cl-tuples::def-tuple-aref ,type-name)
+     (cl-tuples::def-tuple-aref-setter*  ,type-name)
+	 (cl-tuples::def-tuple-aref-setter ,type-name)
+     (cl-tuples::def-tuple-array-dimensions ,type-name)
+     (cl-tuples::def-tuple-fill-pointer ,type-name)
+     (cl-tuples::def-tuple-setf-fill-pointer ,type-name)
+     (cl-tuples::def-with-tuple ,type-name)
+     (cl-tuples::def-with-tuple* ,type-name)
+     (cl-tuples::def-with-tuple-aref ,type-name)
+     (cl-tuples::def-tuple-setter  ,type-name)
+     (cl-tuples::def-tuple-vector-push ,type-name)
+     (cl-tuples::def-tuple-vector-push-extend ,type-name)
+     (cl-tuples::def-tuple-vector-push* ,type-name)
+     (cl-tuples::def-tuple-vector-push-extend* ,type-name)
+     (cl-tuples::def-new-tuple ,type-name)
+     (cl-tuples::def-tuple-maker ,type-name)
+     (cl-tuples::def-tuple-maker* ,type-name)
+     (cl-tuples::def-tuple-setf*  ,type-name)
+     (cl-tuples::def-tuple-array-setf*  ,type-name)
+	 (cl-tuples::def-tuple-array-setf ,type-name)
+     (def-tuple-array-maker ,type-name)
      (def-tuple-accessor ,type-name)
-     (def-tuple-accessor* ,type-name)
-     (def-tuple-setter ,type-name)
-     (def-tuple-maker ,type-name)
-     (def-tuple-maker* ,type-name)
-     (def-tuple-getter ,type-name)
-     (def-tuple-setf* ,type-name)))
+     (def-tuple-accessor* ,type-name)))
 
 (defmacro def-tuple-type (tuple-type-name &key tuple-element-type initial-element elements)
   `(eval-when (:compile-toplevel :execute :load-toplevel)
      (cl-tuples::make-tuple-symbol ',tuple-type-name ',tuple-element-type
                                    ',initial-element ',elements)
-     (make-tuple-operations ,tuple-type-name)
-     (def-tuple-documentation ,tuple-type-name)))
+     (make-tuple-operations ,tuple-type-name)))
+;     (def-tuple-documentation ,tuple-type-name)))
+
+(defmacro def-tuple-op (name param-list &body forms)
+  `(cl-tuples:def-tuple-op ,name ,param-list ,@forms))
+

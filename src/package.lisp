@@ -5,7 +5,6 @@
 
 (in-package :cl-user)
 (defpackage cl-tuples-wrapper
-  (:use :cl
-        :cl-tuples
-        :alexandria)
-  (:export :def-tuple-type))
+  (:use :cl)
+  (:export :def-tuple-type
+           :def-tuple-op))

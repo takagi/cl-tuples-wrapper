@@ -1,40 +1,18 @@
 
 (in-package :cl-tuples-wrapper)
 
-;; tuple-symbol
-
-(defgeneric tuple-symbol (type-name expansion))
-
-(defmethod tuple-symbol ((type-name symbol) (expansion (eql :def-tuple-values)))
-  (cl-tuples::tuple-symbol type-name :def-tuple-values))
-
-(defmethod tuple-symbol ((type-name symbol) (expansion (eql :def-new-tuple)))
-  (cl-tuples::tuple-symbol type-name :def-new-tuple))
-
-(defmethod tuple-symbol ((type-name symbol) (expansion (eql :def-tuple-maker)))
-  (cl-tuples::tuple-symbol type-name :def-tuple-maker))
-
-(defmethod tuple-symbol ((type-name symbol) (expansion (eql :def-tuple-maker*)))
-  (cl-tuples::tuple-symbol type-name :def-tuple-maker*))
-
-(defmethod tuple-symbol ((type-name symbol) (expansion (eql :def-tuple-getter)))
-  (cl-tuples::tuple-symbol type-name :def-tuple-getter))
-
-(defmethod tuple-symbol ((type-name symbol) (expansion (eql :def-tuple-setf*)))
-  (cl-tuples::tuple-symbol type-name :def-tuple-setf*))
-
-
-;; tuple-expansion-fn
-
 (defgeneric tuple-expansion-fn (type-name expansion))
 
-(defmethod tuple-expansion-fn ((type-name symbol)
-                               (expansion (eql :def-tuple-values)))
-  (cl-tuples::tuple-expansion-fn type-name :def-tuple-values))
-
-(defmethod tuple-expansion-fn ((type-name symbol)
-                               (expansion (eql :def-new-tuple)))
-  (cl-tuples::tuple-expansion-fn type-name :def-new-tuple))
+(defmethod tuple-expansion-fn ((type-name symbol) (expansion (eql :def-tuple-array-maker)))
+  `(defun ,(cl-tuples::tuple-symbol type-name :def-tuple-array-maker) (dimensions &key adjustable (initial-element ,(cl-tuples::tuple-initial-element type-name))  (fill-pointer nil))
+	 (the ,(cl-tuples::tuple-typespec** type-name)
+	   (make-array (* ,(cl-tuples::tuple-size type-name) dimensions)
+				   :adjustable adjustable
+				   :initial-element initial-element
+				   :fill-pointer (and fill-pointer
+                                      (* ,(cl-tuples::tuple-size type-name)
+                                         fill-pointer))
+				   :element-type ',(cl-tuples::tuple-element-type type-name)))))
 
 (defun accessor-name (name e &key asterisk package)
   (intern (concatenate 'string (string name) "-" (string e) (when asterisk "*"))
@@ -44,7 +22,7 @@
                                (expansion (eql :def-tuple-accessor)))
   `(progn
      ,@(loop
-          for i from 0 below (tuple-size type-name)
+          for i from 0 below (cl-tuples::tuple-size type-name)
           for e in (cl-tuples::tuple-elements type-name)
           collect `(defmacro ,(accessor-name type-name e) (tuple)
                      (cl-tuples::construct-tuple-array-reference
@@ -54,33 +32,10 @@
                                (expansion (eql :def-tuple-accessor*)))
   `(progn
      ,@(loop
-          for i from 0 below (tuple-size type-name)
+          for i from 0 below (cl-tuples::tuple-size type-name)
           for e in (cl-tuples::tuple-elements type-name)
           collect
-            `(defmacro ,(accessor-name type-name e :asterisk t) (tuple-values)
-               (let ((varlist (cl-tuples::gensym-list ,(tuple-size type-name))))
-                 `(multiple-value-bind ,varlist ,tuple-values
-                    (declare (type ,',(cl-tuples::tuple-element-type type-name)
-                                   ,@varlist))
-                    (declare (ignorable ,@varlist))
-                    ,(nth ,i varlist)))))))
-
-(defmethod tuple-expansion-fn ((type-name symbol)
-                               (expansion (eql :def-tuple-setter)))
-  (cl-tuples::tuple-expansion-fn type-name :def-tuple-setter))
-
-(defmethod tuple-expansion-fn ((type-name symbol)
-                               (expansion (eql :def-tuple-maker)))
-  (cl-tuples::tuple-expansion-fn type-name :def-tuple-maker))
-
-(defmethod tuple-expansion-fn ((type-name symbol)
-                               (expansion (eql :def-tuple-maker*)))
-  (cl-tuples::tuple-expansion-fn type-name :def-tuple-maker*))
-
-(defmethod tuple-expansion-fn ((type-name symbol)
-                               (expansion (eql :def-tuple-getter)))
-  (cl-tuples::tuple-expansion-fn type-name :def-tuple-getter))
-
-(defmethod tuple-expansion-fn ((type-name symbol)
-                               (expansion (eql :def-tuple-setf*)))
-  (cl-tuples::tuple-expansion-fn type-name :def-tuple-setf*))
+            `(def-tuple-op ,(accessor-name type-name e :asterisk t)
+               ((vec ,type-name ,(cl-tuples::tuple-elements type-name)))
+               (:return ,(cl-tuples::tuple-element-type type-name)
+                        ,(nth i (cl-tuples::tuple-elements type-name)))))))
