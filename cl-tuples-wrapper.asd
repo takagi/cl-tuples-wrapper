@@ -16,10 +16,14 @@
   :version "0.1-SNAPSHOT"
   :author "Masayuki Takagi"
   :license "LLGPL"
-  :depends-on (:cl-tuples)
+  :depends-on (:cl-tuples
+               :alexandria)
   :components ((:module "src"
                 :components
-                ((:file "cl-tuples-wrapper"))))
+                ((:file "package")
+                 (:file "tuple-expander")
+                 (:file "documentation")
+                 (:file "cl-tuples-wrapper"))))
   :description ""
   :long-description
   #.(with-open-file (stream (merge-pathnames
