@@ -23,9 +23,8 @@
                 :components
                 ((:file "package")
                  (:file "tuple-expander")
-                 (:file "documentation")
                  (:file "cl-tuples-wrapper"))))
-  :description ""
+  :description "A wrapper of cl-tuples (http://repo.or.cz/w/cl-tuples.git) designed to suit my purpose."
   :long-description
   #.(with-open-file (stream (merge-pathnames
                              #p"README.markdown"
