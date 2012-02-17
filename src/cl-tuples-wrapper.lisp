@@ -48,7 +48,6 @@
      (cl-tuples::make-tuple-symbol ',tuple-type-name ',tuple-element-type
                                    ',initial-element ',elements)
      (make-tuple-operations ,tuple-type-name)))
-;     (def-tuple-documentation ,tuple-type-name)))
 
 (defmacro def-tuple-op (name param-list &body forms)
   `(cl-tuples:def-tuple-op ,name ,param-list ,@forms))
