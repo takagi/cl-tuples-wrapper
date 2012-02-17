@@ -19,6 +19,7 @@
   :depends-on (:cl-tuples
                :alexandria)
   :components ((:module "src"
+                :serial t
                 :components
                 ((:file "package")
                  (:file "tuple-expander")

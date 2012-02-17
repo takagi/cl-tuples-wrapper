@@ -14,6 +14,7 @@
   :depends-on (:cl-tuples-wrapper
                :cl-test-more)
   :components ((:module "t"
+                :serial t
                 :components
                 ((:file "package")
                  (:file "cl-tuples-wrapper"))))
