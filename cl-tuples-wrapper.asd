@@ -22,8 +22,10 @@
                 :serial t
                 :components
                 ((:file "package")
+                 (:file "symbols")
                  (:file "tuple-expander")
-                 (:file "cl-tuples-wrapper"))))
+                 (:file "cl-tuples-wrapper")
+                 (:file "symbols.hack"))))
   :description "A wrapper of cl-tuples (http://repo.or.cz/w/cl-tuples.git) designed to suit my purpose."
   :long-description
   #.(with-open-file (stream (merge-pathnames

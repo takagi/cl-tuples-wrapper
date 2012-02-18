@@ -43,10 +43,10 @@
      (def-tuple-accessor ,type-name)
      (def-tuple-accessor* ,type-name)))
 
-(defmacro def-tuple-type (tuple-type-name &key tuple-element-type initial-element elements)
+(defmacro def-tuple-type (tuple-type-name &key tuple-element-type initial-element elements (simple-array nil))
   `(eval-when (:compile-toplevel :execute :load-toplevel)
-     (cl-tuples::make-tuple-symbol ',tuple-type-name ',tuple-element-type
-                                   ',initial-element ',elements)
+     (make-tuple-symbol ',tuple-type-name ',tuple-element-type
+                        ',initial-element ',elements ',simple-array)
      (make-tuple-operations ,tuple-type-name)))
 
 (defmacro def-tuple-op (name param-list &body forms)

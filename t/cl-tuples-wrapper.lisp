@@ -10,7 +10,14 @@
 (def-tuple-type vec3
     :tuple-element-type double-float
     :initial-element 0d0
-    :elements (x y z))
+    :elements (x y z)
+    :simple-array t)
+
+(def-tuple-type vec4
+    :tuple-element-type double-float
+    :initial-element 0d0
+    :elements (x y z w)
+    :simple-array t)
 
 
 ;; test tuple
