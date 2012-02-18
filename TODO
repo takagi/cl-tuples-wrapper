@@ -1,4 +1,5 @@
 ;;;
 ;;; ToDo:
 ;;; * add documents
+;;; * add definition of tuple types such as vec3 and vec3-array
 ;;;
