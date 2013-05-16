@@ -71,5 +71,11 @@
       (with-vec3-aref (xs 0 (x y z)) x))
     1d0 "with-tuple-aref")
 
+;; test for patch to TUPLE-AREF*
+(let ((xs (make-vec3-aray 1)))
+  (setf (vec3-aref xs 0) (make-vec3 1d0 2d0 3d0))
+  (is (vec3-x* (vec3-aref* xs 0)) 1d0)
+  (is (vec3-y* (vec3-aref* xs 0)) 2d0)
+  (is (vec3-z* (vec3-aref* xs 0)) 3d0)
 
 (finalize)
