@@ -15,14 +15,19 @@
 
 (defmethod tuple-expansion-fn ((type-name symbol) (expansion (eql :def-tuple-aref*)))
   "Create a macro that will index an array that is considered to be an array of tuples and extract an individual tuple as a value form"
-  (let ((tuple-size (tuple-size type-name)))
-    `(defmacro ,(tuple-symbol type-name :def-tuple-aref*) (tuple-array array-index)
-       (let ((array-index-sym (gensym)))
-	 `(let ((,array-index-sym (* ,',tuple-size ,array-index)))
-	    (the ,',(tuple-typespec type-name)
-	      (values ,@(loop for counter below ,tuple-size
-			      collect `(aref (the ,',(tuple-typespec** type-name) ,tuple-array)
-					     (the fixnum (+ ,counter ,array-index-sym)))))))))))
+  `(defmacro ,(cl-tuples::tuple-symbol type-name :def-tuple-aref*) (tuple-array array-index)
+	 (let* ((varlist (cl-tuples::gensym-list ,(cl-tuples::tuple-size type-name)))
+			(array-index-sym (gensym)))
+	   `(let ((,array-index-sym (* ,',(cl-tuples::tuple-size type-name) ,array-index)))
+		  (the ,',(cl-tuples::tuple-typespec type-name)
+			(values ,@(let ((counter 0))
+						   (mapcar #'(lambda (x)
+									   (declare (ignore x))
+									   (prog1
+										   `(aref (the ,',(cl-tuples::tuple-typespec** type-name) ,tuple-array)
+												  (+ ,counter ,array-index-sym))
+										 (incf counter)))
+								   varlist))))))))
 
 (defun accessor-name (name e &key asterisk package)
   (intern (concatenate 'string (string name) "-" (string e) (when asterisk "*"))
