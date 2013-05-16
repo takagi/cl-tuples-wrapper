@@ -1,4 +1,3 @@
-
 (in-package :cl-tuples-wrapper)
 
 (defgeneric tuple-expansion-fn (type-name expansion))
@@ -13,6 +12,17 @@
                                       (* ,(cl-tuples::tuple-size type-name)
                                          fill-pointer))
 				   :element-type ',(cl-tuples::tuple-element-type type-name)))))
+
+(defmethod tuple-expansion-fn ((type-name symbol) (expansion (eql :def-tuple-aref*)))
+  "Create a macro that will index an array that is considered to be an array of tuples and extract an individual tuple as a value form"
+  (let ((tuple-size (tuple-size type-name)))
+    `(defmacro ,(tuple-symbol type-name :def-tuple-aref*) (tuple-array array-index)
+       (let ((array-index-sym (gensym)))
+	 `(let ((,array-index-sym (* ,',tuple-size ,array-index)))
+	    (the ,',(tuple-typespec type-name)
+	      (values ,@(loop for counter below ,tuple-size
+			      collect `(aref (the ,',(tuple-typespec** type-name) ,tuple-array)
+					     (the fixnum (+ ,counter ,array-index-sym)))))))))))
 
 (defun accessor-name (name e &key asterisk package)
   (intern (concatenate 'string (string name) "-" (string e) (when asterisk "*"))
